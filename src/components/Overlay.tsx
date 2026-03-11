@@ -91,7 +91,7 @@ export default function Overlay() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 1, duration: 1 }}
                     >
-                        Architecting autonomous web systems. I build applications that don't just wait for input—they think and act.
+                        Architecting autonomous web systems. I build applications that don&apos;t just wait for input—they think and act.
                     </motion.p>
                 </FadeSection>
             </div>
@@ -134,12 +134,12 @@ export default function Overlay() {
                         <span className="h-[1px] w-12 bg-accent drop-shadow-md"></span>
                     </div>
                     <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-white drop-shadow-xl">
-                        Don't just build a tool. <br className="hidden md:block" />
+                        Don&apos;t just build a tool. <br className="hidden md:block" />
                         Build a <br className="md:hidden" />
                         <span className="text-gradient">digital workforce.</span>
                     </h2>
                     <p className="mt-8 text-neutral-200 text-lg md:text-xl leading-relaxed ml-auto max-w-2xl font-light drop-shadow-md">
-                        The future isn't about better UIs; it's about smarter operations. I leverage full-stack engineering to create scalable infrastructure, and AI to handle complex, repetitive workflows automatically.
+                        The future isn&apos;t about better UIs; it&apos;s about smarter operations. I leverage full-stack engineering to create scalable infrastructure, and AI to handle complex, repetitive workflows automatically.
                     </p>
 
                     <motion.button

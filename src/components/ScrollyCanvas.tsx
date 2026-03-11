@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useScroll, useTransform, useMotionValueEvent, useSpring } from "framer-motion";
 
 const FRAME_COUNT = 144;
@@ -50,10 +50,10 @@ export default function ScrollyImage() {
     );
 
     // Simplified render function: just update the src
-    const renderFrame = (index: number) => {
+    const renderFrame = useCallback((index: number) => {
         if (!imgRef.current || isMobile === null) return;
         imgRef.current.src = getFramePath(index, isMobile);
-    };
+    }, [isMobile]);
 
     // Preload images so they are cached by the browser, but prioritize the first frame
     useEffect(() => {
@@ -95,7 +95,7 @@ export default function ScrollyImage() {
             isMounted = false;
         };
 
-    }, [isMobile]);
+    }, [isMobile, renderFrame]);
 
     // Update on scroll change
     useMotionValueEvent(frameIndex, "change", (latest) => {
@@ -115,6 +115,7 @@ export default function ScrollyImage() {
                    Just use a standard img tag with CSS object-cover.
                    Browser handles the math.
                 */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     ref={imgRef}
                     // Set initial src to avoid empty image flash
