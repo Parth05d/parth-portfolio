@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Custom Reset & Global Styles ──────────────────────── */
+:root {
+  --bg: #121212;
+  --surface: #1a1a1a;
+  --surface-light: #262626;
+  --accent: #a78bfa;
+  --accent-glow: #c4b5fd;
+  --text: #f5f5f5;
+  --text-muted: #a3a3a3;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-light) var(--bg);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+}
+
+/* ── Scrollbar ──────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-light);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* ── Selection ──────────────────────── */
+::selection {
+  background: rgba(167, 139, 250, 0.3);
+  color: var(--text);
+}
+
+/* ── Glassmorphism Utility ──────────────────────── */
+@layer components {
+  .glass {
+    background: rgba(26, 26, 26, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .glass-hover:hover {
+    background: rgba(38, 38, 38, 0.7);
+    border-color: rgba(167, 139, 250, 0.2);
+    box-shadow: 0 0 30px rgba(167, 139, 250, 0.08),
+      0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #f5f5f5 0%, #a78bfa 50%, #c4b5fd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 40px rgba(167, 139, 250, 0.3),
+      0 0 80px rgba(167, 139, 250, 0.1);
+  }
+}
