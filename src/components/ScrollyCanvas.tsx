@@ -55,18 +55,45 @@ export default function ScrollyImage() {
         imgRef.current.src = getFramePath(index, isMobile);
     };
 
-    // Preload images so they are cached by the browser
+    // Preload images so they are cached by the browser, but prioritize the first frame
     useEffect(() => {
         if (isMobile === null) return;
 
-        // Preload all images in background
-        for (let i = 0; i < FRAME_COUNT; i++) {
-            const img = new Image();
-            img.src = getFramePath(i, isMobile);
-        }
+        let isMounted = true;
 
-        // Set initial frame immediately
-        renderFrame(0);
+        const preloadImages = async () => {
+            // 1. Instantly load the first frame so the user sees something immediately
+            const firstImg = new Image();
+            firstImg.src = getFramePath(0, isMobile);
+            
+            await new Promise((resolve) => {
+                firstImg.onload = resolve;
+                firstImg.onerror = resolve; // Continue even if it fails
+            });
+
+            if (!isMounted) return;
+            renderFrame(0);
+
+            // 2. Sequentially load the rest of the images in the background
+            //    This prevents the browser from making 144 requests at the exact same time,
+            //    which would block other important assets (like fonts or CSS) from loading.
+            for (let i = 1; i < FRAME_COUNT; i++) {
+                if (!isMounted) break;
+                
+                await new Promise((resolve) => {
+                    const img = new Image();
+                    img.src = getFramePath(i, isMobile);
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+            }
+        };
+
+        preloadImages();
+
+        return () => {
+            isMounted = false;
+        };
 
     }, [isMobile]);
 
