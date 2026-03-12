@@ -14,12 +14,23 @@ export default function Navbar() {
     const { scrollY } = useScroll();
     const bgOpacity = useTransform(scrollY, [0, 100], [0, 0.8]);
 
+    const [isOpen, setIsOpen] = useState(false);
+
     useEffect(() => {
         const unsubscribe = scrollY.on("change", (latest) => {
             setIsScrolled(latest > 50);
         });
         return unsubscribe;
     }, [scrollY]);
+
+    // Close mobile menu when screen resizes to desktop
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 768) setIsOpen(false);
+        };
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <motion.nav
@@ -29,7 +40,7 @@ export default function Navbar() {
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
             <motion.div
-                className="flex items-center justify-between h-16 md:h-20 border-b transition-colors duration-300"
+                className="flex items-center justify-between h-16 md:h-20 border-b transition-colors duration-300 relative"
                 style={{
                     borderColor: isScrolled
                         ? "rgba(255,255,255,0.06)"
@@ -45,7 +56,7 @@ export default function Navbar() {
                 />
 
                 {/* Logo */}
-                <a href="#" className="relative z-10 group">
+                <a href="#" className="relative z-10 group" onClick={() => setIsOpen(false)}>
                     <span className="text-lg font-bold tracking-tight">
                         P
                         <span className="text-accent group-hover:text-accent-glow transition-colors duration-300">
@@ -55,7 +66,7 @@ export default function Navbar() {
                     </span>
                 </a>
 
-                {/* Links */}
+                {/* Desktop Links */}
                 <div className="hidden md:flex items-center gap-8">
                     {navLinks.map((link) => (
                         <a
@@ -79,20 +90,56 @@ export default function Navbar() {
 
                 {/* Mobile menu button */}
                 <button
-                    className="md:hidden relative z-10 p-2 text-neutral-400 hover:text-white transition-colors"
-                    aria-label="Menu"
+                    className="md:hidden relative z-50 p-2 text-neutral-400 hover:text-white transition-colors"
+                    aria-label="Toggle Menu"
+                    onClick={() => setIsOpen(!isOpen)}
                 >
                     <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="1.5"
+                        strokeWidth="2"
                     >
-                        <path d="M3 6h14M3 10h14M3 14h14" />
+                        {isOpen ? (
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        ) : (
+                            <path d="M4 6h16M4 12h16M4 18h16" />
+                        )}
                     </svg>
                 </button>
+            </motion.div>
+
+            {/* Mobile Dropdown Menu */}
+            <motion.div
+                initial={false}
+                animate={isOpen ? "open" : "closed"}
+                variants={{
+                    open: { opacity: 1, height: "auto", pointerEvents: "auto", display: "block" },
+                    closed: { opacity: 0, height: 0, pointerEvents: "none", transitionEnd: { display: "none" } }
+                }}
+                className="md:hidden relative border-t border-white/5 bg-[#121212]/95 backdrop-blur-xl overflow-hidden"
+            >
+                <div className="flex flex-col items-center py-8 gap-6">
+                    {navLinks.map((link) => (
+                        <a
+                            key={link.label}
+                            href={link.href}
+                            onClick={() => setIsOpen(false)}
+                            className="text-lg text-neutral-300 hover:text-white hover:text-accent transition-colors duration-300 tracking-wide"
+                        >
+                            {link.label}
+                        </a>
+                    ))}
+                    <a
+                        href="mailto:parthdarji.0504@gmail.com"
+                        onClick={() => setIsOpen(false)}
+                        className="mt-4 text-sm px-6 py-3 rounded-full border border-white/10 text-neutral-300 hover:border-accent/50 hover:text-white transition-colors duration-300"
+                    >
+                        Let&apos;s Talk
+                    </a>
+                </div>
             </motion.div>
         </motion.nav>
     );

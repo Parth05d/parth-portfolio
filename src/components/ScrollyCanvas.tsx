@@ -109,7 +109,11 @@ export default function ScrollyCanvas() {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        const dpr = window.devicePixelRatio || 1;
+        // CRITICAL FIX FOR MOBILE LAG:
+        // iPhones have a dpr of 3. Drawing an uncompressed 1170x2532 canvas 60 times a second crushes the WebKit GPU.
+        // We clamp the DPR to 1.5. It's still retina-sharp but requires exponentially less rendering power.
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        
         // Use the parent wrapper container to calculate the full screen size
         const parent = canvas.parentElement;
         if (!parent) return;
@@ -129,9 +133,12 @@ export default function ScrollyCanvas() {
         }
 
         // Re-render current frame on resize
-        if (imagesRef.current[currentFrameRef.current]?.complete) {
-            renderFrame(currentFrameRef.current);
-        }
+        // Use requestAnimationFrame to ensure we don't block the main thread during resize
+        requestAnimationFrame(() => {
+            if (imagesRef.current[currentFrameRef.current]?.complete) {
+                renderFrame(currentFrameRef.current);
+            }
+        });
     }, [renderFrame]); 
 
     // Listen for window resize
