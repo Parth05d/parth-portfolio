@@ -32,6 +32,27 @@ export default function Navbar() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    // Next.js smooth scroll handler
+    const handleScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
+        // Only intercept hash links
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            const targetId = href.replace('#', '');
+            const elem = document.getElementById(targetId);
+            
+            // Close mobile menu first
+            setIsOpen(false);
+            
+            if (elem) {
+                // Wait for the mobile menu animation to finish and unblock the DOM
+                // before asking the browser to scroll the window.
+                setTimeout(() => {
+                    elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        }
+    };
+
     return (
         <motion.nav
             className="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 lg:px-24"
@@ -56,7 +77,7 @@ export default function Navbar() {
                 />
 
                 {/* Logo */}
-                <a href="#" className="relative z-10 group" onClick={() => setIsOpen(false)}>
+                <a href="#" className="relative z-10 group" onClick={(e) => handleScroll(e, '#')}>
                     <span className="text-lg font-bold tracking-tight">
                         P
                         <span className="text-accent group-hover:text-accent-glow transition-colors duration-300">
@@ -72,14 +93,15 @@ export default function Navbar() {
                         <a
                             key={link.label}
                             href={link.href}
-                            className="text-sm text-neutral-400 hover:text-white transition-colors duration-300 tracking-wide"
+                            onClick={(e) => handleScroll(e, link.href)}
+                            className="text-sm text-neutral-400 hover:text-white transition-colors duration-300 tracking-wide cursor-pointer pointer-events-auto"
                         >
                             {link.label}
                         </a>
                     ))}
                     <motion.a
                         href="mailto:parthdarji.0504@gmail.com"
-                        className="text-sm px-5 py-2 rounded-full border border-white/10 text-neutral-300 hover:border-accent/50 hover:text-white transition-colors duration-300"
+                        className="text-sm px-5 py-2 rounded-full border border-white/10 text-neutral-300 hover:border-accent/50 hover:text-white transition-colors duration-300 pointer-events-auto"
                         whileHover={{ scale: 1.05, backgroundColor: "rgba(167, 139, 250, 0.15)" }}
                         whileTap={{ scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -90,7 +112,7 @@ export default function Navbar() {
 
                 {/* Mobile menu button */}
                 <button
-                    className="md:hidden relative z-50 p-2 text-neutral-400 hover:text-white transition-colors"
+                    className="md:hidden relative z-50 p-2 text-neutral-400 hover:text-white transition-colors pointer-events-auto"
                     aria-label="Toggle Menu"
                     onClick={() => setIsOpen(!isOpen)}
                 >
@@ -126,8 +148,8 @@ export default function Navbar() {
                         <a
                             key={link.label}
                             href={link.href}
-                            onClick={() => setIsOpen(false)}
-                            className="text-lg text-neutral-300 hover:text-white hover:text-accent transition-colors duration-300 tracking-wide"
+                            onClick={(e) => handleScroll(e, link.href)}
+                            className="text-lg text-neutral-300 hover:text-white hover:text-accent transition-colors duration-300 tracking-wide cursor-pointer pointer-events-auto"
                         >
                             {link.label}
                         </a>
@@ -135,7 +157,7 @@ export default function Navbar() {
                     <a
                         href="mailto:parthdarji.0504@gmail.com"
                         onClick={() => setIsOpen(false)}
-                        className="mt-4 text-sm px-6 py-3 rounded-full border border-white/10 text-neutral-300 hover:border-accent/50 hover:text-white transition-colors duration-300"
+                        className="mt-4 text-sm px-6 py-3 rounded-full border border-white/10 text-neutral-300 hover:border-accent/50 hover:text-white transition-colors duration-300 pointer-events-auto"
                     >
                         Let&apos;s Talk
                     </a>
