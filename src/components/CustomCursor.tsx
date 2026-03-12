@@ -11,6 +11,11 @@ export default function CustomCursor() {
     const cursorY = useSpring(0, { damping: 25, stiffness: 400 });
 
     useEffect(() => {
+        // Only mount and show cursor on devices with a fine pointer (like a mouse)
+        // This prevents sticky/broken custom cursors on mobile phones and tablets
+        const mediaQuery = window.matchMedia("(pointer: fine)");
+        if (!mediaQuery.matches) return;
+
         setIsMounted(true);
 
         const handleMove = (e: MouseEvent) => {
@@ -53,10 +58,10 @@ export default function CustomCursor() {
     if (!isMounted) return null;
 
     return (
-        <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
+        <>
             {/* Outer ring */}
             <motion.div
-                className="absolute top-0 left-0"
+                className="fixed z-[9999] pointer-events-none top-0 left-0"
                 style={{
                     x: cursorX,
                     y: cursorY,
@@ -76,7 +81,7 @@ export default function CustomCursor() {
 
             {/* Inner dot */}
             <motion.div
-                className="absolute top-0 left-0"
+                className="fixed z-[9999] pointer-events-none top-0 left-0"
                 style={{
                     x: cursorX,
                     y: cursorY,
@@ -92,6 +97,6 @@ export default function CustomCursor() {
                     transition={{ duration: 0.15 }}
                 />
             </motion.div>
-        </div>
+        </>
     );
 }

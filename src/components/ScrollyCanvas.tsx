@@ -24,11 +24,15 @@ function getFramePath(index: number, isMobile: boolean): string {
     return `${basePath}/frame_${padded}_delay-0.042s.webp`;
 }
 
-export default function ScrollyImage() {
+export default function ScrollyCanvas() {
     const containerRef = useRef<HTMLDivElement>(null);
-    // Use a Ref for the image element instead of canvas
-    const imgRef = useRef<HTMLImageElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const currentFrameRef = useRef(0);
+    // Keep images in memory!
+    const imagesRef = useRef<(HTMLImageElement | null)[]>(new Array(FRAME_COUNT).fill(null));
+    
+    // Cache the literal CSS dimensions so we don't calculate on every single scroll tick
+    const dimensionsRef = useRef({ w: 0, h: 0 });
 
     const isMobile = useIsMobile();
 
@@ -38,8 +42,8 @@ export default function ScrollyImage() {
     });
 
     const smoothProgress = useSpring(scrollYProgress, {
-        stiffness: 60,
-        damping: 25,
+        stiffness: 80, // slightly tighter spring for faster response
+        damping: 30, // less bouncy
         restDelta: 0.001
     });
 
@@ -49,43 +53,132 @@ export default function ScrollyImage() {
         [0, FRAME_COUNT - 1]
     );
 
-    // Simplified render function: just update the src
     const renderFrame = useCallback((index: number) => {
-        if (!imgRef.current || isMobile === null) return;
-        imgRef.current.src = getFramePath(index, isMobile);
+        if (isMobile === null) return;
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext("2d");
+        if (!canvas || !ctx) return;
+
+        let img = imagesRef.current[index];
+        
+        // Fallback to closest loaded frame if not loaded yet
+        if (!img || !img.complete) {
+            for (let i = index; i >= 0; i--) {
+                if (imagesRef.current[i]?.complete) {
+                    img = imagesRef.current[i];
+                    break;
+                }
+            }
+        }
+
+        if (img && img.complete) {
+            // Get cached CSS dimensions
+            const canvasW = dimensionsRef.current.w;
+            const canvasH = dimensionsRef.current.h;
+            
+            if (canvasW === 0 || canvasH === 0) return;
+
+            const imgRatio = img.naturalWidth / img.naturalHeight;
+            const canvasRatio = canvasW / canvasH;
+
+            let drawW: number, drawH: number, offsetX: number, offsetY: number;
+
+            // object-fit: contain logic -> Do not cut the image, scale to fit entirely inside container
+            if (canvasRatio > imgRatio) {
+                // canvas is wider than image. Fit to height, center horizontally
+                drawH = canvasH;
+                drawW = canvasH * imgRatio;
+                offsetX = (canvasW - drawW) / 2;
+                offsetY = 0;
+            } else {
+                // canvas is taller than image. Fit to width, center vertically
+                drawW = canvasW;
+                drawH = canvasW / imgRatio;
+                offsetX = 0;
+                offsetY = (canvasH - drawH) / 2;
+            }
+            
+            // Clear and draw! Very high performance since we skip rect computing
+            ctx.clearRect(0, 0, canvasW, canvasH);
+            ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
+        }
     }, [isMobile]);
+
+    // Handle canvas resize with responsiveness and High DPI support
+    const handleResize = useCallback(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const dpr = window.devicePixelRatio || 1;
+        // Use the parent wrapper container to calculate the full screen size
+        const parent = canvas.parentElement;
+        if (!parent) return;
+
+        const rect = parent.getBoundingClientRect();
+        
+        // cache for renderFrame
+        dimensionsRef.current = { w: rect.width, h: rect.height };
+
+        // Ensure responsive width taking into account device pixel ratio
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+            ctx.scale(dpr, dpr);
+        }
+
+        // Re-render current frame on resize
+        if (imagesRef.current[currentFrameRef.current]?.complete) {
+            renderFrame(currentFrameRef.current);
+        }
+    }, [renderFrame]); 
+
+    // Listen for window resize
+    useEffect(() => {
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [handleResize]);
 
     // Preload images so they are cached by the browser, but prioritize the first frame
     useEffect(() => {
         if (isMobile === null) return;
 
         let isMounted = true;
+        // Wipe cache when mobile/desktop changes
+        imagesRef.current = new Array(FRAME_COUNT).fill(null);
 
         const preloadImages = async () => {
-            // 1. Instantly load the first frame so the user sees something immediately
+            // 1. Instantly load the first frame so LCP is fast
             const firstImg = new Image();
             firstImg.src = getFramePath(0, isMobile);
-            
             await new Promise((resolve) => {
                 firstImg.onload = resolve;
                 firstImg.onerror = resolve; // Continue even if it fails
             });
 
             if (!isMounted) return;
+            imagesRef.current[0] = firstImg;
+            handleResize(); // ensure we have correct dimensions before first draw
             renderFrame(0);
 
-            // 2. Sequentially load the rest of the images in the background
-            //    This prevents the browser from making 144 requests at the exact same time,
-            //    which would block other important assets (like fonts or CSS) from loading.
+            // 2. Parallel load the rest - fixes "takes too much time" issue
             for (let i = 1; i < FRAME_COUNT; i++) {
                 if (!isMounted) break;
                 
-                await new Promise((resolve) => {
-                    const img = new Image();
-                    img.src = getFramePath(i, isMobile);
-                    img.onload = resolve;
-                    img.onerror = resolve;
-                });
+                const img = new Image();
+                img.src = getFramePath(i, isMobile);
+                img.onload = () => {
+                    if (isMounted) {
+                        imagesRef.current[i] = img;
+                        // If user scrolled to this frame while it was loading, render it now
+                        if (currentFrameRef.current === i) {
+                            renderFrame(i);
+                        }
+                    }
+                };
+                // Fire and forget; browser network queuing automatically handles concurrency
             }
         };
 
@@ -95,15 +188,18 @@ export default function ScrollyImage() {
             isMounted = false;
         };
 
-    }, [isMobile, renderFrame]);
+    }, [isMobile, handleResize, renderFrame]);
 
     // Update on scroll change
     useMotionValueEvent(frameIndex, "change", (latest) => {
         const index = Math.round(latest);
         if (index === currentFrameRef.current) return;
         currentFrameRef.current = index;
-        // We don't even need requestAnimationFrame here, the browser handles img src changes efficiently
-        renderFrame(index);
+        
+        // Use requestAnimationFrame for smooth canvas painting
+        requestAnimationFrame(() => {
+            renderFrame(index);
+        });
     });
 
     if (isMobile === null) return null; // Avoid flickering wrong image on load
@@ -111,17 +207,8 @@ export default function ScrollyImage() {
     return (
         <div ref={containerRef} className="relative h-[800vh] md:h-[1000vh]">
             <div className="sticky top-0 h-[100dvh] w-full flex items-center justify-center overflow-hidden bg-black">
-                {/* THE MAGIC FIX: 
-                   Just use a standard img tag with CSS object-cover.
-                   Browser handles the math.
-                */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                    ref={imgRef}
-                    // Set initial src to avoid empty image flash
-                    src={getFramePath(0, isMobile)}
-                    alt="Scrolling sequence"
-                    // w-full h-full object-cover does exactly what the complex canvas math was trying to do
+                <canvas
+                    ref={canvasRef}
                     className="absolute inset-0 w-full h-full object-cover"
                 />
             </div>
