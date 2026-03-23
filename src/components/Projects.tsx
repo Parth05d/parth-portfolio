@@ -13,44 +13,52 @@ interface Project {
 
 const projects: Project[] = [
     {
-        title: "ISL Connect",
+        title: "Business Operations & CRM",
         description:
-            "An AI-powered Indian Sign Language recognition system using LSTM neural networks and MediaPipe hand tracking for real-time gesture-to-text translation.",
-        tags: ["Python", "TensorFlow", "MediaPipe", "React", "Flask"],
+            "Enterprise CRM platform built for Futurrizon Technologies covering Leads, Customers, Deals, Employees, Projects, Tasks, and Leave management across 27 screens.",
+        tags: ["Canvas Power Apps", "Power Automate", "SharePoint", "Power Fx"],
+        color: "#3b82f6",
+        link: "",
+    },
+    {
+        title: "ISL Recognition Model",
+        description:
+            "Trained a deep learning computer vision model to recognise Indian Sign Language gestures and deployed the model as an accessible web interface.",
+        tags: ["Python", "TensorFlow", "OpenCV", "Machine Learning"],
         color: "#a78bfa",
-        link: "https://isl-deployment.vercel.app/",
+        link: "https://github.com/Parth05d/ISL-Deployment",
     },
     {
-        title: "Casely",
+        title: "Income Tax Deduction Assistant",
         description:
-            "A sleek product showcase platform with rich visual presentation, designed for browsing and discovering curated case designs and accessories.",
-        tags: ["React", "Bootstrap", "JavaScript", "Vercel"],
-        color: "#f472b6",
-        link: "https://caselybyparth.vercel.app/",
+            "Built a conversational Telegram bot powered by a RAG pipeline to answer income tax deduction queries in natural language.",
+        tags: ["n8n", "RAG Pipeline", "Telegram Bot API", "LLM"],
+        color: "#10b981",
+        link: "",
     },
     {
-        title: "GlobeGo",
+        title: "LinkedIn Post Automation",
         description:
-            "An interactive world explorer that lets users discover countries, flags, and fascinating facts from every corner of the globe with beautiful UI.",
-        tags: ["React", "Vite", "REST API", "CSS"],
-        color: "#34d399",
-        link: "https://globego.vercel.app/",
+            "Designed an automated n8n workflow to schedule, generate, and publish LinkedIn posts, reducing manual effort and ensuring consistent content cadence.",
+        tags: ["n8n", "LinkedIn API", "Workflow Automation"],
+        color: "#0ea5e9",
+        link: "",
+    },
+    {
+        title: "AI-Powered Full Stack Web App",
+        description:
+            "An ongoing full-stack project embedded with an AI chatbot, enabling natural language interactions, context-aware responses, and scalable REST API architectures.",
+        tags: ["React.js", "Node.js", "Express.js", "MongoDB", "LLM"],
+        color: "#f59e0b",
+        link: "",
     },
     {
         title: "Noted",
         description:
-            "A minimal yet powerful personal task manager with an intuitive interface for organizing thoughts, managing tasks, and boosting productivity.",
-        tags: ["React", "Vite", "TypeScript", "Tailwind CSS"],
-        color: "#fbbf24",
+            "Full-stack note-taking application with a REST API backend, JWT authentication, and a responsive React frontend deployed on Vercel.",
+        tags: ["MongoDB", "Express.js", "React.js", "Node.js"],
+        color: "#f43f5e",
         link: "https://noted-byparth.vercel.app/",
-    },
-    {
-        title: "Gradient Generator",
-        description:
-            "A beautiful CSS gradient generator tool for designers and developers — preview, customize, and copy gradient code with a live visual editor.",
-        tags: ["JavaScript", "CSS", "HTML", "Vercel"],
-        color: "#38bdf8",
-        link: "https://vercel.com/parths-projects-fa1e49ef/gradient-generator",
     },
 ];
 
@@ -77,16 +85,17 @@ const cardVariants = {
 };
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
+    const Component = project.link ? motion.a : motion.div;
+    const props = project.link ? { href: project.link, target: "_blank", rel: "noopener noreferrer" } : {};
+
     return (
-        <motion.a
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
+        <Component
+            {...props}
             variants={cardVariants}
             whileHover={{ y: -12, scale: 1.03, boxShadow: "0 25px 50px -12px rgba(167, 139, 250, 0.25)" }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="group glass glass-hover rounded-2xl p-6 md:p-8 cursor-pointer block relative overflow-hidden"
+            className={`group glass glass-hover rounded-2xl p-6 md:p-8 relative overflow-hidden block ${project.link ? 'cursor-pointer' : 'cursor-default'}`}
         >
             {/* Glow accent */}
             <div
@@ -129,20 +138,22 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             </div>
 
             {/* Arrow */}
-            <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="text-neutral-400"
-                >
-                    <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-            </div>
-        </motion.a>
+            {project.link && (
+                <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                    <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="text-neutral-400"
+                    >
+                        <path d="M7 17L17 7M17 7H7M17 7V17" />
+                    </svg>
+                </div>
+            )}
+        </Component>
     );
 }
 

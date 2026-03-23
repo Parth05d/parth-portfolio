@@ -74,7 +74,7 @@ export default function Overlay() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3, duration: 0.8 }}
                     >
-                        AI Automation Engineer & MERN Developer
+                        Full Stack · Power Platform · AI/ML
                     </motion.p>
                     <motion.h1
                         className="text-5xl md:text-8xl lg:text-9xl font-extrabold leading-tight tracking-tight drop-shadow-2xl"
@@ -91,7 +91,7 @@ export default function Overlay() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 1, duration: 1 }}
                     >
-                        Architecting autonomous web systems. I build applications that don&apos;t just wait for input—they think and act.
+                        Building intelligent, scalable applications that solve real business problems. I leverage the MERN stack and Microsoft Power Platform to engineer enterprise-grade solutions.
                     </motion.p>
                 </FadeSection>
             </div>
@@ -115,7 +115,7 @@ export default function Overlay() {
                         <span className="text-gradient">intelligent agents.</span>
                     </h2>
                     <p className="mt-8 text-neutral-200 text-lg md:text-xl leading-relaxed max-w-2xl font-light drop-shadow-md">
-                        I use the <strong className="text-white font-medium">MERN stack</strong> as the foundation to build robust platforms. Then, I integrate custom <strong className="text-accent-glow font-medium">AI Agents</strong> and <strong className="text-accent-glow font-medium">Automation Workflows</strong> to turn passive tools into active, self-managing systems.
+                        I use the <strong className="text-white font-medium">MERN stack</strong> and <strong className="text-white font-medium">Microsoft Power Platform</strong> as the foundation to build robust enterprise systems. Then, I integrate <strong className="text-accent-glow font-medium">AI/ML models</strong> and <strong className="text-accent-glow font-medium">n8n Automation</strong> to turn standard operations into intelligent, self-managing platforms.
                     </p>
                 </FadeSection>
             </div>
@@ -139,7 +139,7 @@ export default function Overlay() {
                         <span className="text-gradient">digital workforce.</span>
                     </h2>
                     <p className="mt-8 text-neutral-200 text-lg md:text-xl leading-relaxed ml-auto max-w-2xl font-light drop-shadow-md">
-                        The future isn&apos;t about better UIs; it&apos;s about smarter operations. I leverage full-stack engineering to create scalable infrastructure, and AI to handle complex, repetitive workflows automatically.
+                        The future isn&apos;t about better UIs; it&apos;s about smarter operations. I leverage full-stack engineering to create scalable infrastructure, and automation pipelines to handle complex business workflows seamlessly.
                     </p>
 
                     <motion.button

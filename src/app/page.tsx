@@ -1,6 +1,7 @@
 import ScrollyCanvas from "@/components/ScrollyCanvas";
 import Overlay from "@/components/Overlay";
 import Projects from "@/components/Projects";
+import Experience from "@/components/Experience";
 import About from "@/components/About";
 import Footer from "@/components/Footer";
 
@@ -12,6 +13,9 @@ export default function Home() {
                 <ScrollyCanvas />
                 <Overlay />
             </section>
+
+            {/* ── Experience ──────────────────────── */}
+            <Experience />
 
             {/* ── Projects Grid ──────────────────────── */}
             <section id="work">

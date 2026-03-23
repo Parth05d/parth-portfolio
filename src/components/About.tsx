@@ -38,13 +38,13 @@ export default function About() {
                     >
                         <p className="text-neutral-200 text-lg md:text-xl leading-relaxed mb-6 font-light">
                             I&apos;m <span className="text-white font-medium">Parth Darji</span>,
-                            an AI Automation Engineer and MERN Stack Developer finishing my B.Tech in Computer Engineering. I&apos;m passionate about building digital products that actively solve complex problems.
+                            a Full Stack and Power Platform Developer finishing my B.Tech in Computer Engineering. I currently build enterprise-grade CRMs and business systems at Futurrizon Technologies.
                         </p>
                         <p className="text-neutral-300 text-base md:text-lg leading-relaxed mb-6 font-light">
-                            I specialize in <span className="text-white font-medium">full-stack infrastructure</span> using MongoDB, Express, React, and Node.js. My core focus, however, is integrating <span className="text-accent-glow font-medium">intelligent agentic workflows</span>—leveraging LLMs, custom AI models, and automation—to move beyond static applications.
+                            I specialize in <span className="text-white font-medium">full-stack infrastructure</span> using the MERN stack and the <span className="text-white font-medium">Microsoft Power Platform</span>. My core focus is integrating <span className="text-accent-glow font-medium">AI/ML models</span> and automation pipelines with n8n to elevate business operations.
                         </p>
                         <p className="text-neutral-300 text-base md:text-lg leading-relaxed font-light">
-                            Whether it&apos;s architecting autonomous platforms or designing predictive systems, my goal is to push the boundaries of what software can achieve without human intervention.
+                            From architecting scalable REST APIs to designing predictive computer vision systems, my goal is to build intelligent platforms that solve real problems.
                         </p>
                     </motion.div>
 
@@ -62,18 +62,22 @@ export default function About() {
                             </p>
                             <div className="flex flex-wrap gap-2">
                                 {[
-                                    "React",
-                                    "Next.js",
+                                    "JavaScript",
+                                    "React.js",
                                     "Node.js",
-                                    "TypeScript",
+                                    "Express.js",
                                     "Python",
-                                    "TensorFlow",
+                                    "Canvas Power Apps",
+                                    "Power Automate",
+                                    "Power BI",
+                                    "SharePoint Online",
+                                    "Power Fx",
+                                    "n8n",
                                     "MongoDB",
-                                    "Express",
+                                    "TensorFlow",
+                                    "OpenCV",
                                     "Tailwind CSS",
                                     "Framer Motion",
-                                    "MediaPipe",
-                                    "Flask",
                                 ].map((skill) => (
                                     <span
                                         key={skill}
